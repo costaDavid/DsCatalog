@@ -1,10 +1,13 @@
 package com.Costa.DsCatalog.service;
 
-import com.Costa.DsCatalog.controller.CategoryController;
 import com.Costa.DsCatalog.dto.CategoryDTO;
 import com.Costa.DsCatalog.entity.Category;
 import com.Costa.DsCatalog.repository.CategoryRepository;
+import com.Costa.DsCatalog.service.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,15 +27,15 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryDTO> findAll(){
-       List<Category> list = categoryRepository.findAll();
-       return list.stream().map(x -> new CategoryDTO(x)).collect(Collectors.toList());
+    public List<CategoryDTO> findAll() {
+        List<Category> list = categoryRepository.findAll();
+        return list.stream().map(x -> new CategoryDTO(x)).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public CategoryDTO findById(Long id){
+    public CategoryDTO findById(Long id) {
         Optional<Category> obj = categoryRepository.findById(id);
-        Category entity = obj.get();
+        Category entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
         return new CategoryDTO(entity);
     }
 
@@ -50,5 +53,9 @@ public class CategoryService {
         entity.setName(categoryDTO.getName());
         entity = categoryRepository.save(entity);
         return new CategoryDTO(entity);
+    }
+
+    public void deleteCategory(Long id) {
+      categoryRepository.deleteById(id);
     }
 }
