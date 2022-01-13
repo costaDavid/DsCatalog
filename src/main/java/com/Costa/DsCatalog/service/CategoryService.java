@@ -3,6 +3,7 @@ package com.Costa.DsCatalog.service;
 import com.Costa.DsCatalog.dto.CategoryDTO;
 import com.Costa.DsCatalog.entity.Category;
 import com.Costa.DsCatalog.repository.CategoryRepository;
+import com.Costa.DsCatalog.service.exceptions.DataBaseException;
 import com.Costa.DsCatalog.service.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
@@ -56,6 +57,14 @@ public class CategoryService {
     }
 
     public void deleteCategory(Long id) {
-      categoryRepository.deleteById(id);
+        try {
+            categoryRepository.deleteById(id);
+        }
+        catch (EmptyResultDataAccessException e){
+                throw new ResourceNotFoundException("Id not found" + id);
+        }
+        catch (DataIntegrityViolationException e){
+                throw new DataBaseException("Integrety violation");
+        }
     }
 }
