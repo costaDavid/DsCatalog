@@ -6,7 +6,7 @@ import lombok.*;
 import java.io.Serializable;
 
 @Data
-//@NoArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 public class CategoryDTO implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -14,8 +14,8 @@ public class CategoryDTO implements Serializable {
     private Long id;
     private String name;
 
-    public CategoryDTO() {
-    }
+   // public CategoryDTO() {
+   // }
 
     public CategoryDTO(Category entity){
         this.id = entity.getId();
