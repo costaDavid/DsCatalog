@@ -1,7 +1,10 @@
 package com.Costa.DsCatalog.service;
 
+import com.Costa.DsCatalog.dto.CategoryDTO;
 import com.Costa.DsCatalog.dto.ProductDTO;
+import com.Costa.DsCatalog.entity.Category;
 import com.Costa.DsCatalog.entity.Product;
+import com.Costa.DsCatalog.repository.CategoryRepository;
 import com.Costa.DsCatalog.repository.ProductRepository;
 import com.Costa.DsCatalog.service.exceptions.DataBaseException;
 import com.Costa.DsCatalog.service.exceptions.ResourceNotFoundException;
@@ -21,6 +24,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
 
     public ProductService(ProductRepository productRepository) {
@@ -43,6 +49,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductDTO saveProduct(ProductDTO productDTO) {
         Product entity = new Product();
+        // copyDtoToEntity(productDTO, entity);
         entity.setName(productDTO.getName());
         entity.setDescription(productDTO.getDescription());
         entity.setPrice(productDTO.getPrice());
@@ -56,6 +63,7 @@ public class ProductService {
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
         try {
             Product entity = productRepository.getOne(id);
+            //     copyDtoToEntity(productDTO, entity);
             entity.setName(productDTO.getName());
             entity.setDescription(productDTO.getDescription());
             entity.setPrice(productDTO.getPrice());
@@ -64,7 +72,7 @@ public class ProductService {
             entity = productRepository.save(entity);
             return new ProductDTO(entity);
         }
-        catch (EntityNotFoundException e){
+        catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Id not found" + id);
         }
     }
@@ -73,11 +81,26 @@ public class ProductService {
         try {
             productRepository.deleteById(id);
         }
-        catch (EmptyResultDataAccessException e){
-                throw new ResourceNotFoundException("Id not found" + id);
+        catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException("Id not found" + id);
         }
-        catch (DataIntegrityViolationException e){
-                throw new DataBaseException("Integrety violation");
+        catch (DataIntegrityViolationException e) {
+            throw new DataBaseException("Integrety violation");
         }
     }
 }
+
+//    private void copyDtoToEntity (ProductDTO productDTO, Product entity){
+//        entity.setName(productDTO.getName());
+//        entity.setDescription(productDTO.getDescription());
+//        entity.setPrice(productDTO.getPrice());
+//        entity.setDate(productDTO.getDate());
+//        entity.setImgUrl(productDTO.getImgUrl());
+//
+//        entity.getCategories().clear();
+//        for (CategoryDTO categoryDTO : productDTO.getCategories()){
+//            Category category = categoryRepository.getOne(categoryDTO.getId());
+//            entity.getCategories().add(category);
+//        }
+//    }
+//}
