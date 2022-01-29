@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -52,10 +53,15 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO) {
-        Category entity = categoryRepository.getOne(id);
-        entity.setName(categoryDTO.getName());
-        entity = categoryRepository.save(entity);
-        return new CategoryDTO(entity);
+        try {
+            Category entity = categoryRepository.getOne(id);
+            entity.setName(categoryDTO.getName());
+            entity = categoryRepository.save(entity);
+            return new CategoryDTO(entity);
+        }
+        catch (EntityNotFoundException e){
+                throw new ResourceNotFoundException("Id not found" + id);
+        }
     }
 
     public void deleteCategory(Long id) {

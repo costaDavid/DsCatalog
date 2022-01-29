@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 @Service
@@ -53,14 +54,19 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
-        Product entity = productRepository.getOne(id);
-        entity.setName(productDTO.getName());
-        entity.setDescription(productDTO.getDescription());
-        entity.setPrice(productDTO.getPrice());
-        entity.setDate(productDTO.getDate());
-        entity.setImgUrl(productDTO.getImgUrl());
-        entity = productRepository.save(entity);
-        return new ProductDTO(entity);
+        try {
+            Product entity = productRepository.getOne(id);
+            entity.setName(productDTO.getName());
+            entity.setDescription(productDTO.getDescription());
+            entity.setPrice(productDTO.getPrice());
+            entity.setDate(productDTO.getDate());
+            entity.setImgUrl(productDTO.getImgUrl());
+            entity = productRepository.save(entity);
+            return new ProductDTO(entity);
+        }
+        catch (EntityNotFoundException e){
+            throw new ResourceNotFoundException("Id not found" + id);
+        }
     }
 
     public void deleteProduct(Long id) {

@@ -7,8 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -44,7 +47,9 @@ public class CategoryController {
     @PostMapping(value = "/save")
     public ResponseEntity<CategoryDTO> saveCategory (@RequestBody CategoryDTO categoryDTO){
         categoryDTO = categoryService.saveCategory(categoryDTO);
-        return ResponseEntity.ok().body(categoryDTO);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(categoryDTO.getId()).toUri();
+        return ResponseEntity.created(uri).body(categoryDTO);
     }
 
     @PutMapping(value = "/{id}")

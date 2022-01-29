@@ -8,6 +8,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping(value ="/product")
@@ -42,7 +45,9 @@ public class ProductController {
     @PostMapping(value = "/save")
     public ResponseEntity<ProductDTO> saveProduct (@RequestBody ProductDTO productDTO){
         productDTO = productService.saveProduct(productDTO);
-        return ResponseEntity.ok().body(productDTO);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("{/id}")
+                .buildAndExpand(productDTO.getId()).toUri();
+        return ResponseEntity.created(uri).body(productDTO);
     }
 
     @PutMapping(value = "/{id}")
